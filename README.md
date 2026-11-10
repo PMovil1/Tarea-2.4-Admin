@@ -82,7 +82,7 @@ Tarea2.2_ApiRest_BitacoraUTH/
         |-- appsettings.Development.json          # Configuracion de desarrollo
         |-- Controllers/
         |   |-- RegistrosController.cs            # Controlador CRUD de registros
-        |   `-- WeatherForecastController.cs      # Controlador de plantilla base
+        |   `-- HealthController.cs               # Estado de la API y Azure SQL
         `-- Properties/
             `-- launchSettings.json               # Perfiles de ejecucion local
 ```
