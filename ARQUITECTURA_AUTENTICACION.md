@@ -190,3 +190,18 @@ No se guardaron credenciales reales, no se modificó una base compartida ni se r
 ### Preparación de entrega en la rama personal
 
 La rama de entrega es `melvinpena/deploy`, basada en `origin/melvinpena/deploy`. Se trasladaron los cambios de autenticación sin incorporar los commits previos de prueba del README y de configuración del IDE. Los permisos del remoto y el resultado del push se verifican al realizar la entrega; publicar la rama no aplica la migración ni despliega automáticamente la API desde esta sesión.
+
+
+### Comentarios de entrega para revisión del equipo
+
+**Problema resuelto:** el registro permitía contraseñas vacías y aceptar el rol enviado por un cliente anónimo. La verificación previa de correo tampoco impedía dos inserciones concurrentes con el mismo correo.
+
+**Implementación:** se agregaron anotaciones de validación a los DTO; el registro exige contraseña de 8 a 128 caracteres y correo válido de máximo 254. El controlador fija el rol Usuario, normaliza el correo en registro/login y conserva el hash con PasswordHasher. El modelo EF impone un índice único y el repositorio traduce errores SQL de duplicado a una excepción de aplicación que el controlador responde con 400. El login mantiene el mensaje genérico de 401 y el contrato token, expiration, role y email.
+
+**Cambio de esquema:** la migración UniqueUsuarioEmail revisa correos vacíos, demasiado largos o duplicados antes de normalizarlos y crear el índice. No borra usuarios. Requiere revisión del responsable de base de datos antes de aplicarse; revertir la migración no recupera el formato anterior de los correos.
+
+**Compatibilidad:** los clientes deben registrar únicamente email y password; ya no se admite elegir el rol mediante el registro público. Las cuentas Admin deben provisionarse de forma controlada. El login conserva su respuesta actual. No se implementaron cambios Android ni modificaciones a la autorización de registros.
+
+**Verificación:** compilación correcta y 14 comprobaciones locales aprobadas. Se añadieron siete casos Postman. Pendientes: ejecución HTTP de esos casos, aplicación de la migración en desarrollo y prueba contra SQL real. Las pruebas manuales de la API ya desplegada no demuestran el comportamiento de este commit.
+
+**Publicación:** el commit funcional `9e6575f` se subió correctamente a `origin/melvinpena/deploy`. El push publica código para revisión; no se ejecutó un despliegue ni una migración desde esta sesión. Se excluyeron los archivos locales de .idea.
