@@ -1,4 +1,4 @@
-﻿using Bitacora.Domain.Entities;
+using Bitacora.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bitacora.Infrastructure.Data;
@@ -11,6 +11,12 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Usuario>(entity =>
+        {
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(254);
+            entity.HasIndex(u => u.Email).IsUnique();
+        });
 
         modelBuilder.Entity<Registro>(entity =>
         {

@@ -1,4 +1,4 @@
-﻿using Bitacora.Application.DTOs;
+using Bitacora.Application.DTOs;
 using Bitacora.Application.Interfaces;
 using Bitacora.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -25,18 +25,26 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Registrar([FromBody] RegisterRequestDto dto)
     {
-        if (await _usuarioRepository.ExistsAsync(dto.Email))
+        var email = dto.Email.Trim().ToUpperInvariant();
+        if (await _usuarioRepository.ExistsAsync(email))
             return BadRequest(new { message = "El correo ya está registrado." });
 
         var usuario = new Usuario
         {
-            Email = dto.Email,
-            Role = string.IsNullOrEmpty(dto.Role) ? "Usuario" : dto.Role
+            Email = email,
+            Role = "Usuario"
         };
 
         usuario.PasswordHash = _passwordHasher.HashPassword(usuario, dto.Password);
 
-        await _usuarioRepository.AddAsync(usuario);
+        try
+        {
+            await _usuarioRepository.AddAsync(usuario);
+        }
+        catch (CorreoDuplicadoException)
+        {
+            return BadRequest(new { message = "El correo ya está registrado." });
+        }
 
         return Ok(new { message = "Usuario registrado exitosamente." });
     }
@@ -45,7 +53,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
     {
-        var usuario = await _usuarioRepository.GetByEmailAsync(dto.Email);
+        var usuario = await _usuarioRepository.GetByEmailAsync(dto.Email.Trim().ToUpperInvariant());
         if (usuario == null)
             return Unauthorized(new { message = "Credenciales inválidas." });
 
