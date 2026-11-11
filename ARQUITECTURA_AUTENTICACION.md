@@ -205,3 +205,8 @@ La rama de entrega es `melvinpena/deploy`, basada en `origin/melvinpena/deploy`.
 **Verificación:** compilación correcta y 14 comprobaciones locales aprobadas. Se añadieron siete casos Postman. Pendientes: ejecución HTTP de esos casos, aplicación de la migración en desarrollo y prueba contra SQL real. Las pruebas manuales de la API ya desplegada no demuestran el comportamiento de este commit.
 
 **Publicación:** el commit funcional `9e6575f` se subió correctamente a `origin/melvinpena/deploy`. El push publica código para revisión; no se ejecutó un despliegue ni una migración desde esta sesión. Se excluyeron los archivos locales de .idea.
+
+
+### Colección manual exportada de Postman
+
+Se incorpora `Tarea 2.5_Seguridad_API_JWT.postman_collection.json`, exportada por el colaborador. Se conserva su nombre original aunque corresponde a esta tarea 2.4. Contiene 11 peticiones manuales: se sustituyeron credenciales por variables vacías, se completaron las rutas de consulta sin token y modificación ajena, y se corrigió la consulta con token inválido a GET. Se agregaron aserciones de estado y guardado de tokens en el entorno local tras login. Configure `registroId` con un registro del primer usuario y utilice otra cuenta para el intento de modificación ajena. La colección requiere preparación manual; no representa una suite ejecutable de principio a fin sin datos previos. Falta agregar DELETE de Admin y separar las variantes de token alterado y vencido. Se verificó JSON y configuración estáticamente; no se ejecutaron estas peticiones en esta entrega.
