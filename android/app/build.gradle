@@ -1,0 +1,28 @@
+plugins { id 'com.android.application' }
+
+def apiUrl = providers.gradleProperty('API_BASE_URL').getOrElse('').trim()
+if (apiUrl && !(apiUrl ==~ /https:\/\/[^\s]+/)) {
+    throw new GradleException('API_BASE_URL debe ser una URL HTTPS.')
+}
+
+android {
+    namespace 'hn.uth.bitacora'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'hn.uth.bitacora'
+        minSdk 26
+        targetSdk 36
+        versionCode 1
+        versionName '1.0'
+        buildConfigField 'String', 'API_BASE_URL', '"' + apiUrl.replace('\\', '\\\\').replace('"', '\\"') + '"'
+    }
+    buildFeatures { buildConfig true }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.12.0'
+}
