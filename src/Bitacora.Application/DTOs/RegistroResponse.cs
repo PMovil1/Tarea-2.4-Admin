@@ -1,4 +1,4 @@
-﻿namespace Bitacora.Application.DTOs;
+namespace Bitacora.Application.DTOs;
 
 public sealed record RegistroResponse(
     int Id,
@@ -6,5 +6,6 @@ public sealed record RegistroResponse(
     string Descripcion,
     bool TieneFoto,
     string? FotoBase64,
-    DateTimeOffset FechaCreacion
+    DateTimeOffset FechaCreacion,
+    bool EsPropio
 );

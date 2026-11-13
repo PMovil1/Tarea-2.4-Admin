@@ -19,13 +19,15 @@ public sealed class RegistrosController(IRegistroRepository repository) : Contro
     {
         var registros = await repository.ObtenerTodosAsync(cancellationToken);
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var response = registros.Select(r => new RegistroResponse(
             r.Id,
             r.Titulo,
             r.Descripcion,
             !string.IsNullOrEmpty(r.FotoBase64),
             r.FotoBase64,
-            r.FechaCreacion
+            r.FechaCreacion,
+            r.UsuarioId.ToString() == userId
         ));
 
         return Ok(response);
@@ -42,13 +44,15 @@ public sealed class RegistrosController(IRegistroRepository repository) : Contro
             return NotFound();
         }
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var response = new RegistroResponse(
             r.Id,
             r.Titulo,
             r.Descripcion,
             !string.IsNullOrEmpty(r.FotoBase64),
             r.FotoBase64,
-            r.FechaCreacion
+            r.FechaCreacion,
+            r.UsuarioId.ToString() == userId
         );
 
         return Ok(response);
@@ -81,7 +85,8 @@ public sealed class RegistrosController(IRegistroRepository repository) : Contro
             registro.Descripcion,
             !string.IsNullOrEmpty(registro.FotoBase64),
             registro.FotoBase64,
-            registro.FechaCreacion
+            registro.FechaCreacion,
+            true
         );
 
         return CreatedAtAction(nameof(ObtenerPorId), new { id = registro.Id }, response);
