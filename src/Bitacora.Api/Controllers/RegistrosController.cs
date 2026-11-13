@@ -13,11 +13,16 @@ namespace Bitacora.Api.Controllers;
 [Route("api/registros")]
 public sealed class RegistrosController(IRegistroRepository repository) : ControllerBase
 {
-    // GET: /api/registros (Listar registros)
+    // GET: /api/registros (Listar registros propios)
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RegistroResponse>>> ObtenerTodos(CancellationToken cancellationToken)
     {
-        var registros = await repository.ObtenerTodosAsync(cancellationToken);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var usuarioId))
+        {
+            return Unauthorized(new { message = "Token inválido o usuario no identificado." });
+        }
+
+        var registros = await repository.ObtenerPorUsuarioAsync(usuarioId, cancellationToken);
 
         var response = registros.Select(r => new RegistroResponse(
             r.Id,
@@ -31,11 +36,16 @@ public sealed class RegistrosController(IRegistroRepository repository) : Contro
         return Ok(response);
     }
 
-    // GET: /api/registros/{id} (Consultar un registro con su foto)
+    // GET: /api/registros/{id} (Consultar un registro propio con su foto)
     [HttpGet("{id:int}")]
     public async Task<ActionResult<RegistroResponse>> ObtenerPorId(int id, CancellationToken cancellationToken)
     {
-        var r = await repository.ObtenerPorIdAsync(id, cancellationToken);
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var usuarioId))
+        {
+            return Unauthorized(new { message = "Token inválido o usuario no identificado." });
+        }
+
+        var r = await repository.ObtenerPorIdDelUsuarioAsync(id, usuarioId, cancellationToken);
 
         if (r == null)
         {

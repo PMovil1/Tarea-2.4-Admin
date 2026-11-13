@@ -7,11 +7,19 @@ namespace Bitacora.Infrastructure.Repositories;
 
 public sealed class RegistroRepository(ApplicationDbContext context) : IRegistroRepository
 {
-    public async Task<IEnumerable<Registro>> ObtenerTodosAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Registro>> ObtenerPorUsuarioAsync(int usuarioId, CancellationToken cancellationToken)
     {
         return await context.Registros
             .AsNoTracking()
+            .Where(r => r.UsuarioId == usuarioId)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Registro?> ObtenerPorIdDelUsuarioAsync(int id, int usuarioId, CancellationToken cancellationToken)
+    {
+        return await context.Registros
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Id == id && r.UsuarioId == usuarioId, cancellationToken);
     }
 
     public async Task<Registro?> ObtenerPorIdAsync(int id, CancellationToken cancellationToken)

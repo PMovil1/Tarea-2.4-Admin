@@ -14,8 +14,9 @@ public interface IRegistroRepository
 {
 
     /// <summary>
-    /// Obtiene todos los registros de la bitácora.
+    /// Obtiene los registros creados por el usuario indicado.
     /// </summary>
+    /// <param name="usuarioId">Identificador del propietario.</param>
     /// <param name="cancellationToken">
     /// Permite cancelar la operación asíncrona.
     /// </param>
@@ -23,7 +24,16 @@ public interface IRegistroRepository
     /// Una colección de registros.
     /// </returns>
 
-    Task<IEnumerable<Registro>> ObtenerTodosAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<Registro>> ObtenerPorUsuarioAsync(int usuarioId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Obtiene el registro indicado si pertenece al usuario.
+    /// </summary>
+    /// <param name="id">Identificador del registro.</param>
+    /// <param name="usuarioId">Identificador del propietario.</param>
+    /// <param name="cancellationToken">Permite cancelar la operación.</param>
+    /// <returns>El registro propio o null si no hay coincidencia.</returns>
+    Task<Registro?> ObtenerPorIdDelUsuarioAsync(int id, int usuarioId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Busca un registro por su identificador único.
