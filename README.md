@@ -155,7 +155,8 @@ Define el patron Repositorio para aislar el acceso a la base de datos de los con
 ```csharp
 public interface IRegistroRepository
 {
-    Task<IEnumerable<Registro>> ObtenerTodosAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<Registro>> ObtenerPorUsuarioAsync(int usuarioId, CancellationToken cancellationToken);
+    Task<Registro?> ObtenerPorIdDelUsuarioAsync(int id, int usuarioId, CancellationToken cancellationToken);
     Task<Registro?> ObtenerPorIdAsync(int id, CancellationToken cancellationToken);
     Task CrearAsync(Registro registro, CancellationToken cancellationToken);
     Task ActualizarAsync(Registro registro, CancellationToken cancellationToken);
@@ -179,8 +180,8 @@ El controlador principal es `RegistrosController` (`Bitacora.Api.Controllers.Reg
 
 | Metodo HTTP | Ruta | Descripcion | Codigo Exito | Codigos de Error Comunes |
 |---|---|---|---|---|
-| `GET` | `/api/registros` | Listar todos los registros de la bitacora | `200 OK` | `500 Internal Server Error` |
-| `GET` | `/api/registros/{id}` | Consultar un registro por identificador | `200 OK` | `404 Not Found`, `500 Internal Server Error` |
+| `GET` | `/api/registros` | Listar los registros del usuario autenticado | `200 OK` | `401 Unauthorized`, `500 Internal Server Error` |
+| `GET` | `/api/registros/{id}` | Consultar un registro propio por identificador | `200 OK` | `401 Unauthorized`, `404 Not Found`, `500 Internal Server Error` |
 | `POST` | `/api/registros` | Crear un nuevo registro de bitacora | `201 Created` | `400 Bad Request`, `500 Internal Server Error` |
 | `PUT` | `/api/registros/{id}` | Actualizar por completo un registro existente | `204 No Content` | `400 Bad Request`, `404 Not Found`, `500 Internal Server Error` |
 | `DELETE` | `/api/registros/{id}` | Eliminar un registro por identificador | `204 No Content` | `404 Not Found`, `500 Internal Server Error` |
@@ -189,6 +190,7 @@ El controlador principal es `RegistrosController` (`Bitacora.Api.Controllers.Reg
 
 #### 1. Listar Registros
 - **Solicitud**: `GET /api/registros`
+- **Autenticación**: enviar el JWT como `Authorization: Bearer <token>`. La lista incluye únicamente registros del titular del token, también para cuentas Admin.
 - **Respuesta (200 OK)**:
 ```json
 [
@@ -206,7 +208,7 @@ El controlador principal es `RegistrosController` (`Bitacora.Api.Controllers.Reg
 #### 2. Consultar Registro por ID
 - **Solicitud**: `GET /api/registros/1`
 - **Respuesta (200 OK)**: Objeto `RegistroResponse` individual.
-- **Respuesta (404 Not Found)**: Devuelta cuando el registro no existe en la base de datos.
+- **Respuesta (404 Not Found)**: Devuelta cuando el registro no existe o pertenece a otro usuario.
 
 #### 3. Crear Registro
 - **Solicitud**: `POST /api/registros`
