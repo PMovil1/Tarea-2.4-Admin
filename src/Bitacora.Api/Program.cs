@@ -100,6 +100,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwaggerUI(options =>
         options.SwaggerEndpoint("/openapi/v1.json", "Bitácora API v1"));
+
+    // Prueba temporal de los clientes Android, configurados con 15 s de espera.
+    app.MapGet("/api/registros/prueba-timeout", async (CancellationToken cancellationToken) =>
+    {
+        await Task.Delay(TimeSpan.FromSeconds(25), cancellationToken);
+        return Results.Ok(Array.Empty<Bitacora.Application.DTOs.RegistroResponse>());
+    }).RequireAuthorization();
 }
 
 // Manejo global de excepciones (ProblemDetails)
